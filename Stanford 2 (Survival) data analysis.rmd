@@ -1,0 +1,151 @@
+---
+author: "Rachael Oluwakamiye Abolade"
+date: "2023-09-12"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager")
+
+```
+
+```{r}
+BiocManager::install("survival")
+library (survival) #load the package 
+stanford2
+```
+```{r}
+# 1.	What  is the number of row and columns of stanford2 dataset?
+print(nrow(stanford2))
+print(ncol(stanford2))
+dim(stanford2)
+
+```
+```{r}
+#2.	What are the column names of the dataset?  What do they represent?
+print(colnames(stanford2))
+
+```
+#id: represents Patient ID number
+#time:represents survival or censoring time
+#status:represents censoring status
+#age:is the age in years of the patients
+#t5:represents T5 mismatch score
+
+
+```{r}
+#3a.	Plot a histogram of survival days for patients with different status (0). 
+hist(stanford2$time[stanford2$status==0],col="red",main="survival days for patients with status 0",xlab="time/days",ylab="no of patients 0 status")
+
+```
+
+
+```{r}
+#3b.	Plot a histogram of survival days for patients with different status (1). 
+hist(stanford2$time[stanford2$status==1],col="green",main="survival days for patients with status 1",xlab="time/days",ylab="no of patients 1 status")
+```
+```{r}
+#4.	Draw a box plot of survival days for patients with different status. 
+boxplot(formula= time~status, data= stanford2,
+        main= "Boxplot for Statuses of patients",
+        col="blue")
+```
+
+```{r}
+#5.	Plot age versus time for patients with different status. 
+# A scatter plot is used to plot age versus time for the different status groups
+
+# Assign a color for each status category 
+status_colors <- ifelse(stanford2$status == 0, "blue", "red")
+
+
+# Plot a S=scatter plot for the data
+plot(
+  stanford2$age,
+  stanford2$time,
+  col = status_colors,
+  main = "Plot age versus time for patients with different status",
+  xlab = "Age",
+  ylab = "Time"
+)
+
+# Add a legend for the different statuses
+legend(
+  "topright",
+  legend = c("Status 0", "Status 1"),
+  col = c("blue", "red"),
+  pch = c(19, 21),
+  title = "Status",
+  bg = "white"
+)
+```
+
+
+```{r}
+# 6 Write a R script that:
+# calculates the median and mean survival days for patients with different status and saves the results into a text file (5 pts).
+
+# Script downloads and loads the required packages for the "survival" package ande calculates the median and mean values.
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+
+# Install the survival package using BiocManager
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install("survival")
+
+# Load the survival package
+library(survival)
+
+
+# Calculate median and mean survival days for patients with different 0 status
+median_status_0 <- median(stanford2$time[stanford2$status == 0])
+
+## Calculate median and mean survival days for patients with different 1 status
+median_status_1 <- median(stanford2$time[stanford2$status == 1])
+
+# Calculate mean survival days for patients with different 0 status
+mean_status_0 <- mean(stanford2$time[stanford2$status == 0])
+
+# Calculate mean survival days for patients with different 1 status
+mean_status_1 <- mean(stanford2$time[stanford2$status == 1])
+
+
+# Save the results of the medians and means into one text file
+survival_results <- data.frame(Status = c("0", "1"), 
+                      Median = c(median_status_0, median_status_1), 
+                      Mean = c(mean_status_0, mean_status_1))
+
+write.table(survival_results, "survival_results.txt", sep = "\t", row.names = FALSE)
+
+
+```
+
+```{r}
+# 6. Show the mean and median survival data for patients with different status (0/1) in a barplot diagram
+
+# Barplot of mean and median survival data
+barplot(t(survival_results[, c("Median", "Mean")]), 
+        beside = TRUE, 
+        col = c("blue", "red"), 
+        ylim = c(0, max(survival_results$Mean) + 100), 
+        names.arg = survival_results$Status, 
+        main = "Mean and Median Survival Days by Status",
+        xlab = "Status", ylab = "Survival Days")
+
+legend("topright", legend = c("Median", "Mean"), fill = c("blue","red"))
+
+```
+ 7. Write a paragraph to summarize your analysis.
+
+# The working directory for my analysis was set and the survival package which contains the "stanford2" dataset was installed using BiocManager. I then loaded the "stanford2" dataset into my R environment. I proceeded by conducting data exploration, including examining the data structure and deriving descriptive statistics. After that, I created data visualizations using histograms, box plots, and a scatter plot to gain insights into the dataset. Finally, I calculated the mean and median survival days for the different patient statuses and presented the results as a bar plot. This analysis generally provides a comprehensive analysis of survival outcomes in the "stanford2" dataset.The stanford2 data contains the survival of patients on the waiting list for the stanford heart transplant.The dataset has 184 rows and 5 columns,each columns represent id:Patient ID number,time:survival or censoring time, status:censoring status, age:age in years of the patients and t5:represents T5 mismatch score. The histogram shows the frequency of survival distribution of patients over a specific number of survival days. The height of each bar indicates how often a certain number of patients survived.The boxplot shows differences in the distribution of survival days among the two different patient status as their median, whiskers and outliers differs.The longer the box, the more dispersed the data. This, the barplot futher confirms with patients with status 0 having higher mean and median values compared to patients with status 1. Overall, the exploratory analysis and visualization of stanford2 data,shows that patient with status 0 had longer survival days compared to the patient with status 1.
+
